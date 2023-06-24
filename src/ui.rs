@@ -6,6 +6,7 @@ use std::sync::{Arc, Mutex};
 #[derive(Clone, Data, Lens)]
 pub struct AppState {
     pub data_outside: Arc<Mutex<f64>>,
+    pub data_inside: f64
 }
 
 struct UpdatedLabelWidget {}
@@ -46,12 +47,13 @@ impl Widget<AppState> for UpdatedLabelWidget {
 
 pub fn ui_builder() -> impl Widget<AppState> {
 
-    let text = LocalizedString::new("Gate")
-        .with_arg("gate", |data: &AppState, _env: _| {
-            let v = data.data_outside.lock().unwrap();
-            format!("{:.2}", *v).into()
-        });
-    let label = Label::new(text).padding(5.0).center();
+    let label = Label::new(|data: &Arc<Mutex<f64>>, _env: &_| {
+            let v = data.lock().unwrap();
+            format!("Data outside: {}", v)
+        })
+        .with_text_size(32.0)
+        .lens(AppState::data_outside)
+        .padding(5.0);
 
     Flex::column().with_child(label).with_default_spacer()
 }

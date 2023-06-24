@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc::channel;
 use std::{thread, time};
 
-fn send(event_type: &EventType) {
+fn _send(event_type: &EventType) {
     let delay = time::Duration::from_millis(20);
     match simulate(event_type) {
         Ok(()) => println!("We could send {:?}", event_type),
@@ -26,15 +26,16 @@ fn main() {
     let data_outside_clone = data_outside.clone();
 
     thread::spawn(move || {
-        for _event in rchan.iter() {
-            // println!("Received! {:?}", event);
+        for event in rchan.iter() {
+            println!("Received! {:?}", event);
             let mut data = data_outside_clone.lock().unwrap();
             *data += 0.1;
         }
     });
 
     let initial_state: ui::AppState = ui::AppState { 
-        data_outside
+        data_outside,
+        data_inside: 0.0
     };
 
     thread::spawn(move || {
