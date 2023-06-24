@@ -47,8 +47,8 @@ impl Widget<AppState> for UpdatedLabelWidget {
 pub fn ui_builder() -> impl Widget<AppState> {
 
     let text = LocalizedString::new("Gate")
-        .with_arg("gate", |app: &AppState, _env: _| {
-            let v = app.data_outside.lock().unwrap();
+        .with_arg("gate", |data: &AppState, _env: _| {
+            let v = data.data_outside.lock().unwrap();
             format!("{:.2}", *v).into()
         });
     let label = Label::new(text).padding(5.0).center();
