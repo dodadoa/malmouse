@@ -793,14 +793,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "malmouse"
-version = "0.1.0"
-dependencies = [
- "druid",
- "rdev",
-]
-
-[[package]]
 name = "matches"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -819,6 +811,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "mice_race"
+version = "0.1.0"
+dependencies = [
+ "druid",
+ "rdev",
 ]
 
 [[package]]

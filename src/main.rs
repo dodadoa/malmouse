@@ -25,8 +25,8 @@ fn main() {
     let data_outside_clone = data_outside.clone();
 
     thread::spawn(move || {
-        for event in rchan.iter() {
-            println!("Received! {:?}", event);
+        for _event in rchan.iter() {
+            // println!("Received! {:?}", event);
             let mut data = data_outside_clone.lock().unwrap();
             *data += 0.1;
         }
@@ -45,12 +45,8 @@ fn main() {
                         .unwrap_or_else(|e| println!("Could not send event {:?}", e));
                     // send(&EventType::MouseMove { x: 10.0, y: 200.0 });
                 }
-                EventType::KeyPress(key) => {
-                    println!("User wrote {:?}", key);
-                }
-                EventType::KeyRelease(key) => {
-                    println!("User wrote {:?}", key);
-                }
+                EventType::KeyPress(_) => {}
+                EventType::KeyRelease(_) => {}
                 EventType::ButtonPress(_) => {}
                 EventType::ButtonRelease(_) => {}
                 EventType::Wheel { delta_x: _, delta_y: _ } => {}
