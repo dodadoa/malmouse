@@ -1,7 +1,7 @@
 pub mod ui;
 
 use druid::{AppLauncher, WindowDesc};
-use rdev::{listen, simulate, Event, EventType, SimulateError};
+use rdev::{listen, simulate, EventType, SimulateError};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::channel;
 use std::{thread, time};
@@ -14,6 +14,7 @@ fn send(event_type: &EventType) {
             println!("We could not send {:?}", event_type);
         }
     }
+    
     // Let ths OS catchup - at least MacOS
     thread::sleep(delay);
 }
@@ -39,7 +40,7 @@ fn main() {
     thread::spawn(move || {
         listen(move |event| {
             match event.event_type {
-                EventType::MouseMove { x, y } => {
+                EventType::MouseMove { x: _x, y: _y } => {
                     schan
                         .send(event)
                         .unwrap_or_else(|e| println!("Could not send event {:?}", e));

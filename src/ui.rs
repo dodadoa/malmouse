@@ -1,5 +1,5 @@
 use druid::widget::prelude::*;
-use druid::widget::{Flex, Label, Button};
+use druid::widget::{Flex, Label};
 use druid::{Data, Lens, Widget, WidgetExt, LocalizedString};
 use std::sync::{Arc, Mutex};
 
@@ -11,7 +11,7 @@ pub struct AppState {
 struct UpdatedLabelWidget {}
 
 impl Widget<AppState> for UpdatedLabelWidget {
-    fn event(&mut self, ctx: &mut EventCtx, event: &Event, data: &mut AppState, _env: &Env) {
+    fn event(&mut self, _ctx: &mut EventCtx, _event: &Event, _data: &mut AppState, _env: &Env) {
     }
 
     fn lifecycle(
@@ -23,7 +23,7 @@ impl Widget<AppState> for UpdatedLabelWidget {
     ) {
     }
 
-    fn update(&mut self, ctx: &mut UpdateCtx, old_data: &AppState, data: &AppState, _env: &Env) {
+    fn update(&mut self, _ctx: &mut UpdateCtx, _old_data: &AppState, _data: &AppState, _env: &Env) {
     }
 
     fn layout(
@@ -41,7 +41,7 @@ impl Widget<AppState> for UpdatedLabelWidget {
         }
     }
 
-    fn paint(&mut self, ctx: &mut PaintCtx, data: &AppState, _env: &Env) {}
+    fn paint(&mut self, _ctx: &mut PaintCtx, _data: &AppState, _env: &Env) {}
 }
 
 pub fn ui_builder() -> impl Widget<AppState> {
@@ -52,11 +52,6 @@ pub fn ui_builder() -> impl Widget<AppState> {
             format!("{:.2}", *v).into()
         });
     let label = Label::new(text).padding(5.0).center();
-    let button = Button::new("Click me!")
-        .on_click(|_ctx, data: &mut AppState, _env| {
-            let mut v = data.data_outside.lock().unwrap();
-            *v += 0.1;
-        });
 
-    Flex::column().with_child(label).with_default_spacer().with_child(button)
+    Flex::column().with_child(label).with_default_spacer()
 }
