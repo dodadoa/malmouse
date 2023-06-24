@@ -1,32 +1,10 @@
 pub mod ui;
 
-use rdev::{listen, Event, simulate, EventType, SimulateError};
+use druid::{AppLauncher, WindowDesc};
+use rdev::{listen, simulate, Event, EventType, SimulateError};
+use std::sync::{Arc, Mutex};
+use std::sync::mpsc::channel;
 use std::{thread, time};
-use druid::widget::{Button, Flex, Label, Slider};
-use druid::{AppLauncher, LocalizedString, Widget, WidgetExt, WindowDesc, Data, Lens};
-
-
-fn callback(event: Event) {
-    println!("My callback {:?}", event);
-    match event.event_type {
-        EventType::MouseMove { x, y } => {
-            println!("User wrote {:?} {:?}", x, y);
-            // send(&EventType::MouseMove { x: 10.0, y: 200.0 });
-        },
-        EventType::KeyPress(key) => {
-            println!("User wrote {:?}", key);
-        },
-        EventType::KeyRelease(key) => {
-            println!("User wrote {:?}", key);
-        },
-        EventType::ButtonPress(_) => {
-        },
-        EventType::ButtonRelease(_) => {
-        },
-        EventType::Wheel { delta_x, delta_y } => {
-        },
-    }
-}
 
 fn send(event_type: &EventType) {
     let delay = time::Duration::from_millis(20);
@@ -36,20 +14,49 @@ fn send(event_type: &EventType) {
             println!("We could not send {:?}", event_type);
         }
     }
-    // Let ths OS catchup (at least MacOS)
+    // Let ths OS catchup - at least MacOS
     thread::sleep(delay);
 }
 
 fn main() {
-    // create the initial app state
-    let initial_state: ui::AppState = ui::AppState {
-        value: 0.0,
+    
+    let (schan, rchan) = channel();
+    let data_outside = Arc::new(Mutex::new(0.0));
+    let data_outside_clone = data_outside.clone();
+
+    thread::spawn(move || {
+        for event in rchan.iter() {
+            println!("Received! {:?}", event);
+            let mut data = data_outside_clone.lock().unwrap();
+            *data += 0.1;
+        }
+    });
+
+    let initial_state: ui::AppState = ui::AppState { 
+        data_outside
     };
 
     thread::spawn(move || {
-        if let Err(error) = listen(callback) {
-            println!("Error: {:?}", error)
-        }
+        listen(move |event| {
+            match event.event_type {
+                EventType::MouseMove { x, y } => {
+                    schan
+                        .send(event)
+                        .unwrap_or_else(|e| println!("Could not send event {:?}", e));
+                    // send(&EventType::MouseMove { x: 10.0, y: 200.0 });
+                }
+                EventType::KeyPress(key) => {
+                    println!("User wrote {:?}", key);
+                }
+                EventType::KeyRelease(key) => {
+                    println!("User wrote {:?}", key);
+                }
+                EventType::ButtonPress(_) => {}
+                EventType::ButtonRelease(_) => {}
+                EventType::Wheel { delta_x: _, delta_y: _ } => {}
+            }
+        })
+        .expect("Could not listen");
     });
 
     let main_window = WindowDesc::new(ui::ui_builder());
@@ -58,5 +65,4 @@ fn main() {
         .log_to_console()
         .launch(initial_state)
         .expect("Failed to launch application");
-    
 }
