@@ -11,7 +11,10 @@ pub struct AppState {
 struct UpdatedLabelWidget {}
 
 impl Widget<AppState> for UpdatedLabelWidget {
-    fn event(&mut self, _ctx: &mut EventCtx, _event: &Event, _data: &mut AppState, _env: &Env) {
+    fn event(&mut self, _ctx: &mut EventCtx, _event: &Event, data: &mut AppState, _env: &Env) {     
+        let data = data.data_outside.lock().unwrap();
+        println!("event {}", *data)
+
     }
 
     fn lifecycle(
@@ -21,9 +24,11 @@ impl Widget<AppState> for UpdatedLabelWidget {
         _data: &AppState,
         _env: &Env,
     ) {
+        println!("lifecycle")
     }
 
     fn update(&mut self, _ctx: &mut UpdateCtx, _old_data: &AppState, _data: &AppState, _env: &Env) {
+        println!("update")
     }
 
     fn layout(
@@ -41,18 +46,19 @@ impl Widget<AppState> for UpdatedLabelWidget {
         }
     }
 
-    fn paint(&mut self, _ctx: &mut PaintCtx, _data: &AppState, _env: &Env) {}
+    fn paint(&mut self, _ctx: &mut PaintCtx, _data: &AppState, _env: &Env) {
+    }
 }
 
 pub fn ui_builder() -> impl Widget<AppState> {
-
     let label = Label::new(|data: &Arc<Mutex<f64>>, _env: &_| {
             let v = data.lock().unwrap();
+            println!("Data outside: {}", v);
             format!("Data outside: {}", v)
         })
         .with_text_size(32.0)
         .lens(AppState::data_outside)
         .padding(5.0);
 
-    Flex::column().with_child(label).with_default_spacer()
+    Flex::column().with_child(label).with_default_spacer().with_child(UpdatedLabelWidget {})
 }
