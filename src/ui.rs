@@ -1,12 +1,11 @@
 use druid::widget::prelude::*;
 use druid::widget::{Flex, Label};
-use druid::{Data, Lens, Widget, WidgetExt, LocalizedString};
+use druid::{Data, Lens, Widget, WidgetExt};
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone, Data, Lens)]
 pub struct AppState {
     pub data_outside: Arc<Mutex<f64>>,
-    pub data_inside: f64
 }
 
 struct UpdatedLabelWidget {}

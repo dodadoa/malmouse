@@ -35,7 +35,6 @@ fn main() {
 
     let initial_state: ui::AppState = ui::AppState { 
         data_outside,
-        data_inside: 0.0
     };
 
     thread::spawn(move || {
